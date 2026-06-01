@@ -1,6 +1,6 @@
 #!/bin/bash
 
-find . -type f -name "*.zip" -print0 | while IFS= read -r -d '' zipfile; do
+find . -type f -iname "*.zip" -print0 | while IFS= read -r -d '' zipfile; do
     # Получаем директорию архива
     zipdir=$(dirname "$zipfile")
     

@@ -4,7 +4,7 @@
 mkdir -p ./src
 
 # Рекурсивно ищем все .jpg файлы
-find ./raw -type f -iname "*.jpg" -print0 | while IFS= read -r -d '' file; do
+find ./raw -type f -iname "*.jpg" -o -iname "*.jpeg" -print0 | while IFS= read -r -d '' file; do
     # Вычисляем MD5 хеш файла
     md5_hash=$(md5sum "$file" | awk '{print $1}')
     
