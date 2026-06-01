@@ -32,8 +32,8 @@ h1{margin-bottom:4px;font-size:22px}
 .duplicates-section .section-label{color:#ef6c00}
 .duplicates-grid{display:flex;flex-wrap:wrap;gap:14px}
 .card{border:1px solid #e0e0e0;border-radius:6px;padding:8px;
-      background:#fafafa;text-align:center;max-width:260px}
-.card.original{border-color:#a5d6a7;background:#f1f8e9}
+      background:#fafafa;text-align:center;max-width:350px}
+.card.original{border-color:#a5d6a7;background:#f1f8e9;max-width:350px}
 .card img{height:220px;width:auto;object-fit:contain;
           display:block;margin:0 auto 6px}
 .card .info{font-size:11px;color:#555;line-height:1.5}
@@ -55,6 +55,18 @@ def score_class(score):
         return "score-medium"
     return "score-low"
 
+def format_bytes(size):
+    """Форматирует байты в KiB, MiB, GiB и т.д."""
+    if size == 0:
+        return "0 B"
+    
+    units = ["B", "KiB", "MiB", "GiB", "TiB", "PiB"]
+    i = 0
+    while size >= 1024 and i < len(units) - 1:
+        size /= 1024
+        i += 1
+    
+    return f"{size:.1f} {units[i]}"
 
 def make_card(item, is_original=False):
     score = item.get('score')
@@ -62,7 +74,7 @@ def make_card(item, is_original=False):
     if score is not None:
         score_html = f'<span class="score {score_class(score)}">{score:.3f}</span>'
 
-    w, h = item.get('width', '?'), item.get('height', '?')
+    w, h, s = item.get('width', '?'), item.get('height', '?'), format_bytes(int(item.get('file_size', '?')))
     added = item.get('added_at', '')[:19].replace('T', ' ')
     css = 'original' if is_original else ''
 
@@ -70,7 +82,7 @@ def make_card(item, is_original=False):
     <div class="card {css}">
         <img src="{item['path']}" alt="" loading="lazy">
         <div class="info">
-            <span>{w}×{h}</span>
+            <span>{w}×{h}&nbsp;{s}</span>
             <span>{added}</span>
             {score_html}
         </div>
@@ -84,8 +96,9 @@ def main():
     for i, g in enumerate(data['groups'], 1):
         orig = make_card({
             'path': g['original_path'],
-            'width': g.get('width'),
-            'height': g.get('height'),
+            'width': g.get('original_width'),
+            'height': g.get('original_height'),
+            'file_size': g.get('original_file_size'),
             'added_at': g.get('original_added_at', ''),
         }, is_original=True)
 

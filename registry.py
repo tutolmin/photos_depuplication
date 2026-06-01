@@ -84,21 +84,17 @@ def cmd_add():
 
 def select_original(photos, encodings):
     """
-    Given a list of photo dicts (must include md5_hash, width, height, file_size, added_at)
+    Given a list of photo dicts (must include md5_hash, width, height, file_size)
     and the encodings map, select the best candidate as the original following the policy:
     1. Maximum resolution (width * height)
     2. Maximum file size
-    3. Earliest added_at
+    3. При равенстве — любой (например, первый)
     Returns the photo dict of the chosen original.
     """
-    def sort_key(photo):
-        resolution = photo.get('width', 0) * photo.get('height', 0)
-        file_size = photo.get('file_size', 0)
-        added_at = photo.get('added_at', '')
-        # Descending resolution, descending file_size, ascending added_at
-        return (-resolution, -file_size, added_at)
-
-    return max(photos, key=sort_key)
+    return max(photos, key=lambda p: (
+        p.get('width', 0) * p.get('height', 0),
+        p.get('file_size', 0)
+    ))
 
 def cmd_dedup():
     """Find and mark perceptual duplicates in files/ directory."""

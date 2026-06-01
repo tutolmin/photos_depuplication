@@ -30,7 +30,7 @@ def find_duplicate_groups(files_dir: Path) -> Tuple[List[List[str]], Dict[str, A
 
     # Use imagededup's built-in method to find duplicates (max distance threshold 10)
     duplicates_dict = phasher.find_duplicates(encoding_map=encodings,
-                                              max_distance_threshold=10)
+                                              max_distance_threshold=0)
 
     # Build graph to find connected components (groups)
     # duplicates_dict: filename -> [list of duplicate filenames]

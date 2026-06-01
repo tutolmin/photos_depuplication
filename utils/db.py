@@ -84,7 +84,7 @@ def get_duplicate_groups(conn: sqlite3.Connection) -> List[Dict]:
     for orig_id in original_ids:
         # fetch original
         orig = conn.execute(
-            "SELECT id, md5_hash, added_at FROM photos WHERE id = ?",
+            "SELECT id, md5_hash, width, height, file_size, added_at FROM photos WHERE id = ?",
             (orig_id,)
         ).fetchone()
         if not orig:
@@ -92,16 +92,23 @@ def get_duplicate_groups(conn: sqlite3.Connection) -> List[Dict]:
         original = dict(orig)
         # fetch duplicates
         dups = conn.execute(
-            "SELECT id, md5_hash, added_at FROM photos WHERE original_id = ?",
+            "SELECT id, md5_hash, width, height, file_size, score, added_at FROM photos WHERE original_id = ?",
             (orig_id,)
         ).fetchall()
         groups.append({
             "original_id": original["id"],
+            "original_width": original["width"],
+            "original_height": original["height"],
+            "original_file_size": original["file_size"],
             "original_path": f"files/{original['md5_hash']}.jpg",
             "original_added_at": original["added_at"].replace(" ", "T"),
             "duplicates": [
                 {
                     "id": d["id"],
+                    "width": d["width"],
+                    "height": d["height"],
+                    "file_size": d["file_size"],
+                    "score": d["score"],
                     "path": f"dups/{d['md5_hash']}.jpg",
                     "added_at": d["added_at"].replace(" ", "T")
                 }
