@@ -12,7 +12,8 @@ find . -type f -iname "*.zip" -print0 | while IFS= read -r -d '' zipfile; do
     echo "Распаковка в: $tempdir"
     
     # Распаковываем архив во временную папку
-    if unzip -q "$zipfile" -d "$tempdir"; then
+#    if unzip -q "$zipfile" -d "$tempdir"; then
+    if 7z x -o"$tempdir" "$zipfile"; then
         # Успех - удаляем архив
         rm -f "$zipfile"
         echo "Архив удалён: $zipfile"
