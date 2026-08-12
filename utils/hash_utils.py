@@ -40,11 +40,17 @@ def get_jpeg_dimensions(filepath: Path) -> Optional[Tuple[int, int]]:
             f.seek(2)
             while True:
                 byte = f.read(1)
+                if byte == b'':
+                    break
                 if byte != b'\xff':
                     continue  # should not happen in valid JPEG
                 # skip padding 0xFF bytes
                 while byte == b'\xff':
                     byte = f.read(1)
+                    if byte == b'':
+                        break
+                if byte == b'':
+                    break
                 marker = byte[0]
                 if marker == 0xD8:  # SOI (shouldn't appear again)
                     continue
